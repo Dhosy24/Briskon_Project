@@ -58,7 +58,7 @@ $(document).ready(function(){
     //fetch messages every 3 seconds
 
     fetchmessages();
-    setInterval(fetchmessages,3000);
+  
 });
 
 //submit the chat message
