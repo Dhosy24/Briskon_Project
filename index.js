@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (!nameElement || !imageElement || !statusElement) {
                 console.warn("One or more elements are missing inside .person-view");
-                return; // Stop execution if required elements are missing
+                return;
             }
 
             const name = nameElement.textContent;
@@ -24,23 +24,33 @@ document.addEventListener("DOMContentLoaded", function () {
             if (chatImage) chatImage.src = imageSrc;
             if (chatStatus) chatStatus.innerHTML = statusHTML;
 
-            console.log(`Chat switched to: ${name,imageSrc}`);
+            console.log(`Chat switched to: ${name}`);
+
+            fetchmessages(); // Load previous messages instantly
+
+            if (window.chatInterval) {
+                clearInterval(window.chatInterval); // Clear previous interval
+            }
+            window.chatInterval = setInterval(fetchmessages, 1000); // Fetch messages every second
         });
     });
 });
 
-
-function fetchmessages(){
-    var sender=$('#sender').val();
-    var receiver=$('#receiver').val();
+function fetchmessages() {
+    var sender = $('#sender').val();
+    var receiver = $('#receiver').val();
+    var chatView = $('#chat-view');
+    var isAtBottom = chatView.scrollTop() + chatView.innerHeight() >= chatView[0].scrollHeight - 10;
 
     $.ajax({
-        url:'fetch_messages.php',
-        type:'POST',
-        data:{sender:sender,receiver:receiver},
-        success: function(data){
+        url: 'fetch_messages.php',
+        type: 'POST',
+        data: { sender: sender, receiver: receiver },
+        success: function (data) {
             $('#chat-view').html(data);
-            scrollChatToBottom();
+            if (isAtBottom) {
+                scrollChatToBottom(); // Scroll only if the user was already at the bottom
+            }
         },
         error: function (xhr, status, error) {
             console.error('Error fetching messages:', error);
@@ -48,45 +58,49 @@ function fetchmessages(){
     });
 }
 
-function scrollChatToBottom(){
-    var chatView=$('#chat-view');
+
+function scrollChatToBottom() {
+    var chatView = $('#chat-view');
     chatView.scrollTop(chatView.prop("scrollHeight"));
 }
 
+$(document).ready(function () {
+    fetchmessages(); // Load messages when the page loads
 
-$(document).ready(function(){
-    //fetch messages every 3 seconds
+    // Submit the chat message
+    $('#chat-form').submit(function (e) {
+        e.preventDefault();
 
-    fetchmessages();
-  
-});
+        var sender = $('#sender').val();
+        var receiver = $('#receiver').val();
+        var message = $('#message').val();
 
-//submit the chat message
-$('#chat-form').submit(function(e){
-    e.preventDefault();
-    
-    var sender=$('#sender').val();
-    var receiver=$('#receiver').val();
-    var message=$('#message').val();
-
-    if (message.trim() === "") {
-        alert("Cannot send empty messages or spaces.")
-        return; // Do not send empty messages
-    }
-    
-    console.log("Sending Data:", { sender: sender, receiver: receiver, message: message });
-
-    $.ajax({    
-        url:'submit_messages.php',
-        type:'POST',
-        data:{sender:sender,receiver:receiver, message:message},
-        success: function(){
-            $('#message').val('');
-            fetchmessages();
-        },
-        error: function (xhr, status, error) {
-            console.error('Message submission failed:', error);
+        if (message.trim() === "") {
+            alert("Cannot send empty messages or spaces.");
+            return;
         }
-    });
-});
 
+        console.log("Sending Data:", { sender: sender, receiver: receiver, message: message });
+
+        $.ajax({
+            url: 'submit_messages.php',
+            type: 'POST',
+            data: { sender: sender, receiver: receiver, message: message },
+            dataType: 'json',
+            success: function (response) {
+                if (response.success) {
+                    $('#message').val('');
+                    fetchmessages(); // Fetch new messages instantly
+                } else {
+                    console.error("Message submission failed:", response.error);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Message submission failed:', error);
+            }
+        });
+    });
+
+    // Auto-fetch messages every second
+    setInterval(fetchmessages, 1000);
+});
