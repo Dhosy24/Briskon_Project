@@ -3,14 +3,16 @@ session_start(); // Start session once at the beginning
 include("db.php");
 
 // Redirect if user is not logged in
-if (!isset($_SESSION['username'])) {
+if (!isset($_SESSION['f_name'])) {
     header("Location: login.php");
     exit();
 }
+$f_name = $_SESSION['f_name'];  // Now $f_name is ready to use
+
 $user = isset($_GET['user']) ? ucfirst($_GET['user']) : "Default User";
 $selectedImage = isset($_GET['image']) ? $_GET['image'] : "pics/default.png";
 
-$username = $_SESSION['username']; // Username is already set
+$username = $_SESSION['f_name']; // Username is already set
 $selectedUser='';
 
 
@@ -123,7 +125,7 @@ $selectedUser='';
                    <ul class="list-group list-group-flush" style="max-height: 525px; overflow-y: auto; -ms-overflow-style: none; scrollbar-width: none; ">
                         <?php
                         // Query: Fetch all users except the logged-in user
-                        $sql = "SELECT username FROM users WHERE username != '$username'";
+                        $sql = "SELECT f_name FROM employees WHERE f_name != '$f_name'";
                         $result = $conn->query($sql);
 
                         // Get available images
@@ -131,7 +133,7 @@ $selectedUser='';
 
                         if ($result && $result->num_rows > 0) {
                             while ($row = $result->fetch_assoc()) {
-                                $userItem = ucfirst($row['username']);
+                                $userItem = ucfirst($row['f_name']);
                                 
                                 // Ensure there is at least one image
                                 if (count($imageFiles) > 0) {
@@ -170,7 +172,7 @@ $selectedUser='';
 
                 </div>
                 
-                <!-- this is the third division the chat -->
+                <!-- this is the third division the chat -->    
                 <div class="d-flex flex-column m-0  back  p-3 rounded-4 h-100 ms-2 flex-grow-1 chat-box" style="align-self: flex-start; background-color:aliceblue;" id="chat-box">
                     <!-- Add content for the header  div -->
                     <div id="chat-header" class="d-flex align-items-center justify-content-between gap-3 rounded-3" style="background-color: #DBDCFE; padding: 10px;">
@@ -198,7 +200,7 @@ $selectedUser='';
                     </div>
                                     
                 <!-- chat View area -->
-                <div id="chat-view" class="flex-grow-1 overflow-auto p-2 border rounded chat-view" style="height: 300px; background-color: #f8f9fa;">
+                <div id="chat-view" class="flex-grow-1 overflow-auto p-2 border rounded chat-view" style="height: 300px; background-color: white;">
                     <!-- Messages will be dynamically added here --> 
                 </div>
             

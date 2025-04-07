@@ -2,7 +2,7 @@
 session_start();
 include('db.php');
 
-if (!isset($_SESSION['username'])) {
+if (!isset($_SESSION['f_name'])) {
     exit("You are not logged in");
 }
 
@@ -18,13 +18,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
-            $isSender = ($row['sender'] == $_SESSION['username']); // Check if logged-in user sent the message
+            $isSender = ($row['sender'] == $_SESSION['f_name']); // Check if logged-in user sent the message
             
             if ($isSender) {
                 // Sent Messages (Right-aligned)
                 echo '
                 <div class="d-flex justify-content-end pe-3 mb-3">
-                    <div class=" text-black rounded p-2" style="max-width: 60%; background-color: #DBDCFE;">
+                    <div class=" text-white rounded p-2" style="max-width: 60%; background-color:rgb(159, 128, 208);">
                         <p class="mb-1">' . htmlspecialchars($row["message"]) . '</p>
                         <small class="d-block text-end" style="font-size: 10px;">' . date("h:i A", strtotime($row["created_at"])) . '</small>
                     </div>
@@ -33,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Received Messages (Left-aligned)     
                 echo '
                 <div class="d-flex justify-content-start ps-3 mb-3">
-                    <div class="text-black rounded p-2 " style="max-width: 60%; background-color: #DBDCFE">
+                    <div class="text-white rounded p-2 " style="max-width: 60%; background-color:rgb(159, 128, 208);">
                         <p class="mb-1">' . htmlspecialchars($row["message"]) . '</p>
                         <small class="d-block text-start" style="font-size: 10px;">' . date("h:i A", strtotime($row["created_at"])) . '</small>
                     </div>

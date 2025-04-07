@@ -2,32 +2,42 @@
 session_start();
 include('db.php');
 
-if (isset($_SESSION['username'])) {
+if (isset($_SESSION['f_name'])) {
     header("Location: index.php");
     exit();
 }
 
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    $username = $_POST['username'];
+    $f_name = $_POST['username']; // From login form input
     $password = $_POST['password'];
 
-    $sql = "SELECT * FROM users WHERE username='$username' AND password='$password'";
-    $result = $conn->query($sql);
+    $sql = "SELECT * FROM employees WHERE f_name = ? AND password = ?";
+    $stmt = $conn->prepare($sql);
 
-    if ($result->num_rows == 1) {
-        $_SESSION['username'] = $username;
+    if (!$stmt) {
+        die("Prepare failed: " . $conn->error);
+    }
+
+    $stmt->bind_param("ss", $f_name, $password);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    // Corrected part: fetch row to access f_name
+    if ($result->num_rows === 1) {
+        $row = $result->fetch_assoc(); 
+        $_SESSION['f_name'] = $row['f_name']; // Now this works fine
         header("Location: index.php");
         exit();
     } else {
         $error = "Invalid username or password";
     }
 
+    $stmt->close();
 }
 $conn->close();
-
 ?>
+
 
 
 <!DOCTYPE html>

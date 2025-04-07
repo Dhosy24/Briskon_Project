@@ -4,7 +4,7 @@
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname="chat";
+$dbname="actionbr_staging";
 
 $conn= new mysqli($servername,$username,$password,$dbname);
 

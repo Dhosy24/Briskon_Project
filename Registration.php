@@ -2,7 +2,7 @@
 session_start();
 include('db.php');
 
-if(isset($_SESSION['username'])){
+if(isset($_SESSION['f_name'])){
     header("Location:index.php");
     exit();
 }
@@ -10,14 +10,14 @@ if(isset($_SESSION['username'])){
 
 if($_SERVER["REQUEST_METHOD"]=="POST"){
 
-    $username = $_POST['username'];
+    $f_name = $_POST['username'];
     $password = $_POST['password'];
 
 
      // check if the user is already there
 
-     $stmt = $conn->prepare("SELECT * from users WHERE username=?");
-     $stmt->bind_param("s",$username);
+     $stmt = $conn->prepare("SELECT * from employees WHERE f_name =?");
+     $stmt->bind_param("s",$f_name);
      $stmt->execute();
      $result = $stmt->get_result();
 
@@ -25,10 +25,10 @@ if($_SERVER["REQUEST_METHOD"]=="POST"){
         $error = "User name already exists";
      }
      else{
-        $stmt = $conn->prepare("INSERT INTO users(username,password) VALUES(?,?)");
-        $stmt->bind_param("ss",$username,$password);
+        $stmt = $conn->prepare("INSERT INTO employees(f_name,password) VALUES(?,?)");
+        $stmt->bind_param("ss",$f_name,$password);
         if($stmt->execute()){
-            $_SESSION['username']= $username;
+            $_SESSION['f_name']= $f_name;
             header("Location:index.php");
         }else{
             $error = "Registration failed";
