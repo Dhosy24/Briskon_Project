@@ -100,7 +100,7 @@ $(document).ready(function () {
             }
         });
     });
-
+    
     // Auto-fetch messages every second
     setInterval(fetchmessages, 1000);
 });

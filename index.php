@@ -151,9 +151,6 @@ $selectedUser='';
                                                 <img src='$assignedImage' alt='$userItem' class='rounded-circle me-3' style='width: 40px; height: 40px; object-fit: cover; border: 2px solid #d1d1ff;'>
                                                 <div class='d-flex flex-column'>
                                                     <h6 class='mb-0 fw-bold'>$userItem</h6>
-                                                    <p class='text-muted mb-0'>
-                                                        <i class='fas fa-circle text-success' style='font-size: 10px;'></i> Online
-                                                    </p>
                                                 </div>
                                             </div>
                                         </a>
